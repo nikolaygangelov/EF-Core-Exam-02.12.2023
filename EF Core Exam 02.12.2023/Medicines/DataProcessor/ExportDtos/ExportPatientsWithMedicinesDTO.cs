@@ -17,13 +17,13 @@ namespace Medicines.DataProcessor.ExportDtos
 
 
         [XmlElement("Price")]
-        public string Price { get; set; }
+        public string Price { get; set; } //using string format in order to map with needed export format
 
         [XmlElement("Producer")]
         public string Producer { get; set; }
 
         [XmlElement("BestBefore")]
-        public string BestBefore { get; set; }
+        public string BestBefore { get; set; } //using string format in order to map with needed export format
 
 
 
