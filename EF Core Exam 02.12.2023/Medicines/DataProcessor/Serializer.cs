@@ -16,13 +16,16 @@
     {
         public static string ExportPatientsWithTheirMedicines(MedicinesContext context, string date)
         {
-
+            //using Data Transfer Object Class to map it with patients
             XmlSerializer serializer = new XmlSerializer(typeof(ExportPatientsDTO[]), new XmlRootAttribute("Patients"));
 
+            //using StringBuilder to gather all info in one string
             StringBuilder sb = new StringBuilder();
 
+            //"using" automatically closes opened connections
             using var writer = new StringWriter(sb);
 
+            //setting identation with tabulation
             XmlWriterSettings settings = new XmlWriterSettings
             {
                 Indent = true,
@@ -32,8 +35,11 @@
             using var xmlwriter = XmlWriter.Create(writer, settings);
 
             var xns = new XmlSerializerNamespaces();
+
+            //one way to display empty namespace in resulted file
             xns.Add(string.Empty, string.Empty);
 
+            //validating date
             DateTime givenDate;
             DateTime.TryParse(date, out givenDate);
 
@@ -42,6 +48,7 @@
                 givenDate))
                 .Select(p => new ExportPatientsDTO
                 {
+                    //using identical properties in order to map successfully
                     Gender = p.Gender.ToString().ToLower(),
                     Name = p.FullName,
                     AgeGroup = p.AgeGroup.ToString(),
@@ -65,16 +72,22 @@
                 .ToArray();
 
 
+            //Serialize method needs file, TextReader object and namespace to convert/map
             serializer.Serialize(xmlwriter, patientsAndMedicines, xns);
+
+            //explicitly closing connection in terms of reaching edge cases
             writer.Close();
 
-            return sb.ToString();
+            //using TrimEnd() to get rid of white spaces
+            return sb.ToString().TrimEnd();
 
 
         }
 
         public static string ExportMedicinesFromDesiredCategoryInNonStopPharmacies(MedicinesContext context, int medicineCategory)
         {
+            //turning needed info about medicines into a collection using anonymous object
+            //using less data
             var medicinesAndPharmacies = context.Medicines
                 .Where(m => m.Category == (Category)medicineCategory &&
                 m.Pharmacy.IsNonStop == true)
@@ -92,6 +105,8 @@
                 })
                  .ToArray();
 
+            //Serialize method needs object to convert/map
+	        //adding Formatting for better reading 
             return JsonConvert.SerializeObject(medicinesAndPharmacies, Newtonsoft.Json.Formatting.Indented);
         }
     }
